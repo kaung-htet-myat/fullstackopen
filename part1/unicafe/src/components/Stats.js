@@ -1,16 +1,28 @@
 import React from 'react';
 import StatsLine from './StatsLine';
 
-const Stats = ({stats}) => {
-    let calc = <p>No Feedback Given</p>
+const Stats = ({ stats }) => {
+    let calc = (
+        <tbody>
+            <StatsLine text="Good" value={stats.good} />
+            <StatsLine text="Neutral" value={stats.neutral} />
+            <StatsLine text="Bad" value={stats.bad} />
+            <tr><td>No Feedback Given</td></tr>
+        </tbody>
+    )
     let statsBool = (stats.good + stats.neutral + stats.bad) === 0;
 
-    if(!statsBool) {
-        calc = (<div>
-            <p>All: {total()}</p>
-            <p>Average: {calcAvg()}</p>
-            <p>Positive: {calcPos()}%</p>
-        </div>)
+    if (!statsBool) {
+        calc = (
+            <tbody>
+                <StatsLine text="Good" value={stats.good} />
+                <StatsLine text="Neutral" value={stats.neutral} />
+                <StatsLine text="Bad" value={stats.bad} />
+                <tr><td>All: </td><td>{total()}</td></tr>
+                <tr><td>Average: </td><td>{calcAvg()}</td></tr>
+                <tr><td>Positive: </td><td>{calcPos()}</td></tr>
+            </tbody>
+        )
     }
 
     function total() {
@@ -19,7 +31,7 @@ const Stats = ({stats}) => {
     }
 
     function calcAvg() {
-        const score = ((1*stats.good) + (0*stats.neutral) + (-1*stats.bad)) / (stats.good + stats.neutral + stats.bad);
+        const score = ((1 * stats.good) + (0 * stats.neutral) + (-1 * stats.bad)) / (stats.good + stats.neutral + stats.bad);
         return score;
     }
 
@@ -28,13 +40,12 @@ const Stats = ({stats}) => {
         return score;
     }
 
-    return(
+    return (
         <div>
             <h3>Statistics</h3>
-            <StatsLine text="Good" value={stats.good} />
-            <StatsLine text="Neutral" value={stats.neutral} />
-            <StatsLine text="Bad" value={stats.bad} />
-            {calc}
+            <table>
+                {calc}
+            </table>
         </div>
     );
 }
