@@ -2,20 +2,22 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import Form from './components/Form'
 import Numbers from './components/Numbers'
-import axios from 'axios'
+import AlertBox from './components/Alert'
+import { getPersons, postNewPerson, deletePerson, updatePerson } from './components/Communicate'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [personsToShow, setPersonsToShow] = useState(persons)
+  const [alertBox, setAlertBox] = useState("")
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons")
-    .then(response => {
-      //console.log(response.data);
-      setPersons(response.data)
-    })
+    getPersons()
+      .then(data => {
+        //console.log(response.data);
+        setPersons(data)
+      })
   }, [])
 
   useEffect(() => {
@@ -23,21 +25,44 @@ const App = () => {
   }, [persons])
 
   const onSubmitHandler = (event) => {
-    console.log(newName);
-    console.log(newNumber);
     event.preventDefault()
     if (persons.every(person => person.name !== newName)) {
-      let newID = Math.max(...persons.map(person => person.id)) + 1
-      setPersons(persons.concat(
-        {
-          name: newName,
-          number: newNumber,
-          id: newID
-        }
-      ))
-      console.log(persons);
+      postNewPerson(newName, newNumber)
+        .then(newPersons => {
+          setPersons(persons.concat([newPersons]))
+          setAlertBox(<AlertBox name={newName} action="add" />)
+        })
+
     } else {
-      alert(`The name ${newName} is already added!`)
+      if (window.confirm(`${newName} is already in the phonebook. Do you want to replace the number?`)) {
+        const targetPerson = persons.find(person => person.name === newName)
+        const changedPerson = { ...targetPerson, number: newNumber }
+        updatePerson(changedPerson)
+          .then(data => {
+            setPersons(persons.map(person => person.name !== data.name ? person : data))
+            setAlertBox(<AlertBox name={newName} action="update" />)
+          })
+          .catch(error => {
+            setAlertBox(<AlertBox name={newName} action="deleted" />)
+          })
+      }
+    }
+  }
+
+  const onPersonDeleteHandler = (event, id, name) => {
+    if (window.confirm(`Do you want to delete ${name}?`)) {
+      deletePerson(id)
+        .then(response => {
+          console.log(response)
+          getPersons()
+            .then(data => {
+              setPersons(data)
+              setAlertBox(<AlertBox name={name} action="delete" />)
+            })
+        })
+        .catch(error => {
+          setAlertBox(<AlertBox name={newName} action="deleted" />)
+        })
     }
   }
 
@@ -53,11 +78,12 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-
+  console.log(alertBox)
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter searchHandler={(e) => searchHandler(e)} />
+      {alertBox}
       <h2>Add a new </h2>
       <Form
         onSubmitHandler={(e) => onSubmitHandler(e)}
@@ -66,7 +92,7 @@ const App = () => {
         newNumber={newNumber}
         numberChangeHandler={(e) => numberChangeHandler(e)} />
       <h2>Numbers</h2>
-      <Numbers personsToShow={personsToShow} />
+      <Numbers personsToShow={personsToShow} onPersonDeleteHandler={onPersonDeleteHandler} />
     </div>
   )
 }
