@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseUrl = "http://localhost:3001/api/persons"
+const baseUrl = "https://fathomless-tor-24254.herokuapp.com/api/persons"
 
 const postNewPerson = (name, number) => {
     const person = {
