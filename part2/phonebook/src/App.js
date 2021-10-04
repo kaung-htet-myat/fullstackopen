@@ -32,10 +32,15 @@ const App = () => {
           setPersons(persons.concat([newPersons]))
           setAlertBox(<AlertBox name={newName} action="add" />)
         })
+        .catch(error => {
+          console.log(error.response.data)
+          setAlertBox(<AlertBox name={error.response.data['error']} action="validationError" />)
+        })
 
     } else {
       if (window.confirm(`${newName} is already in the phonebook. Do you want to replace the number?`)) {
         const targetPerson = persons.find(person => person.name === newName)
+        console.log(targetPerson);
         const changedPerson = { ...targetPerson, number: newNumber }
         updatePerson(changedPerson)
           .then(data => {

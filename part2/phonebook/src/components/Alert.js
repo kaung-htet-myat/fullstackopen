@@ -42,6 +42,13 @@ const AlertBox = ({ name, action }) => {
                 </div>
             )
             break
+        case "validationError":
+            content = (
+                <div style={boxStyle}>
+                    {name}
+                </div>
+            )
+            break
         default:
             content = null
     }
