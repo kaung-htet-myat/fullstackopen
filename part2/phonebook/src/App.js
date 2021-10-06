@@ -58,7 +58,7 @@ const App = () => {
     if (window.confirm(`Do you want to delete ${name}?`)) {
       deletePerson(id)
         .then(response => {
-          console.log(response)
+          // console.log(response)
           getPersons()
             .then(data => {
               setPersons(data)
