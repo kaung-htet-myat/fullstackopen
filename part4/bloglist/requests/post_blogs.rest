@@ -2,8 +2,6 @@ POST http://localhost:3003/api/blogs
 content-Type: application/json
 
 {
-    "title": "Formula 1 sets out to Turkey this week",
     "author": "Kaung Htet",
-    "url": "http://racingnews.blog",
-    "likes": 0
+    "url": "http://aitoday.blog"
 }
