@@ -40,3 +40,39 @@ describe('total likes', () => {
     })
 
 })
+
+describe('favorite blog', () => {
+    const blogs = [
+        { 
+            "id": "615dd021e59a96c40dc81a75", 
+            "title": "Hello World Blog", 
+            "author": "Kaung Htet",
+            "url": "http://helloworld.blog",
+            "likes": 20,
+        },
+        { 
+            "id": "615dd021e59453535dc81a75", 
+            "title": "F1 Blog", 
+            "author": "Kaung Htet",
+            "url": "http://racingnews.blog",
+            "likes": 15,
+        },
+        { 
+            "id": "12535d021e59453535dc81a75", 
+            "title": "Fitness Blog", 
+            "author": "Kaung Htet",
+            "url": "http://fitness.blog",
+            "likes": 15,
+        },
+    ]
+
+    test('favorite blog is with 15 likes', () => {
+        expect(listHelper.favoriteBlog(blogs)).toEqual({ 
+            "id": "615dd021e59a96c40dc81a75", 
+            "title": "Hello World Blog", 
+            "author": "Kaung Htet",
+            "url": "http://helloworld.blog",
+            "likes": 20,
+        })
+    })
+})
