@@ -26,6 +26,14 @@ blogs = [
     }
 ]
 
+beforeEach(async () => {
+    await Blog.deleteMany({})
+
+    const blogObjects = blogs.map(blog => new Blog(blog))
+    const promiseArray = blogObjects.map(blog => blog.save())
+    await Promise.all(promiseArray)
+})
+
 test('get request returns status 200', async () => {
     await api
         .get('/api/blogs')
@@ -106,12 +114,42 @@ test('invalid post request', async () => {
     expect(response.body).toHaveLength(blogs.length)
 })
 
-beforeEach(async () => {
-    await Blog.deleteMany({})
+test('can delete one object', async () => {
 
-    const blogObjects = blogs.map(blog => new Blog(blog))
-    const promiseArray = blogObjects.map(blog => blog.save())
-    await Promise.all(promiseArray)
+    let response = await api.get('/api/blogs')
+    const blogToDelete = response.body[0]
+    const id = blogToDelete.id
+
+    await api
+        .delete(`/api/blogs/${id}`)
+        .expect(204)
+
+    response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(blogs.length - 1)
+
+    const titles = response.body.map(r => r.title)
+    expect(titles).not.toContainEqual(
+        blogToDelete.title
+    )
+})
+
+test('can update one object', async () => {
+    let response = await api.get('/api/blogs')
+    const blogToUpdate = response.body[0]
+    const id = blogToUpdate.id
+
+    const blog = {
+        title: "New Title",
+        author: "New Author",
+        url: "http://newurl.blog",
+        likes: 0
+    }
+
+    const result = await api
+        .put(`/api/blogs/${id}`)
+        .send(blog)
+
+    expect(result.body.title).toEqual(blog.title)
 })
 
 afterAll(() => {
