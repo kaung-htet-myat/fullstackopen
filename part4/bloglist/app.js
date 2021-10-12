@@ -3,6 +3,8 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 
 const blogRouter = require('./controllers/blogs')
+const userRouter = require('./controllers/users')
+const loginRouter = require('./controllers/logins')
 const configs = require('./utils/config')
 const loggers = require('./utils/loggers')
 const middlewares = require('./utils/middlewares')
@@ -20,7 +22,9 @@ mongoose.connect(mongoUrl).then(result => {
     loggers.info('Cannot connect to the database', error)
 })
 
-app.use('/api/blogs', blogRouter)
+app.use('/api/blogs', middlewares.userExtractor, blogRouter)
+app.use('/api/users', userRouter)
+app.use('/api/login', loginRouter)
 app.use(middlewares.errorHandler)
 
 module.exports = app

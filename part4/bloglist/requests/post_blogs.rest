@@ -1,7 +1,9 @@
 POST http://localhost:3003/api/blogs
-content-Type: application/json
+Content-Type: application/json
+// Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNocmlzdG9waGVyIiwiaWQiOiI2MTY0NTJjZDM0MTNlMDhkY2JmNjJhZjgiLCJpYXQiOjE2MzM5NjU2NjJ9.OzGkv9-rGwzPuDjU7Apw01VKwG4BXaYUFny7WLjb1Xk
 
 {
+    "title": "Brown Fox!",
     "author": "Kaung Htet",
-    "url": "http://aitoday.blog"
+    "url": "http://today.blog"
 }
