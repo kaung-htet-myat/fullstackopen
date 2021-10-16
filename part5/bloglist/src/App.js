@@ -1,21 +1,25 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/logins'
+import NewBlog from './components/NewBlog'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    blogService.getAll()
+      .then(blogs => {
+        setBlogs(blogService.sortBlogs(blogs))
+      })
   }, [])
 
   useEffect(() => {
@@ -39,7 +43,7 @@ const App = () => {
         setPassword('')
       })
       .catch(error => {
-        alert("Wrong username or password")
+        alert('Wrong username or password', error)
       })
   }
 
@@ -78,46 +82,74 @@ const App = () => {
       })
       .then(newBlog => {
         setBlogs(blogs.concat(newBlog))
+        setTitle('')
+        setAuthor('')
+        setUrl('')
       })
   }
 
-  const loginForm = () => (
-    <form onSubmit={loginHandler}>
-      <h2>Login to the application</h2>
-      <div>
-        username: <input type='text' value={username} name='username' onChange={(e) => usernameChangeHandler(e)} />
-      </div>
-      <div>
-        password: <input type='password' value={password} name='password' onChange={(e) => passwordChangeHandler(e)} />
-      </div>
-      <button type='submit'>Submit</button>
-    </form>
-  )
+  const likeHandler = (event, blog) => {
+    blogService
+      .likeBlog(blog)
+      .then(updatedBlog => {
+        setBlogs(blogs.map(b => b.id !== updatedBlog.id ? b : updatedBlog))
+      })
+  }
 
-  const blogForm = () => (
-    <div>
-      <h2>User: {user.username} <button onClick={(e) => logoutHandler(e)}>Log out</button></h2>
-      <h2>blogs</h2>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-      <form onSubmit={createBlogHandler}>
-        <h3>Create new blog</h3>
-        title: <input type='input' name='title' value={title} onChange={(e) => titleChangeHandler(e)} />
-        author: <input type='input' name='author' value={author} onChange={(e) => authorChangeHandler(e)} />
-        url: <input type='input' name='url' value={url} onChange={(e) => urlChangeHandler(e)} />
-        <button type='submit'>Submit</button>
-      </form>
-    </div>
-  )
+  const removeBlogHandler = (event, blog) => {
+    if (window.confirm(`Remove ${blog.title} from phonebook?`)) {
+      blogService
+        .removeBlog(blog)
+        .then(status => {
+          if (status === 204) {
+            setBlogs(blogs.filter(b => b.id !== blog.id))
+          }
+        })
+    }
+  }
+
+  const blogForm = () => {
+
+    return (
+      <div>
+        <h2>User: {user.username} <button onClick={(e) => logoutHandler(e)}>Log out</button></h2>
+        <h2>blogs</h2>
+        {blogs.map(blog =>
+          <Blog
+            key={blog.id}
+            blog={blog}
+            likeHandler={(e) => likeHandler(e, blog)}
+            removeBlogHandler={(e) => removeBlogHandler(e, blog)}
+          />
+        )}
+
+        <NewBlog
+          createBlogHandler={createBlogHandler}
+          title={title}
+          url={url}
+          author={author}
+          titleChangeHandler={(e) => titleChangeHandler(e)}
+          authorChangeHandler={(e) => authorChangeHandler(e)}
+          urlChangeHandler={(e) => urlChangeHandler(e)}
+        />
+
+      </div>
+    )
+  }
 
   return (
     <div>
       <h1>Blog Lists</h1>
       {
         user === null ?
-        loginForm() :
-        blogForm()
+          <LoginForm
+            username={username}
+            password={password}
+            loginHandler={loginHandler}
+            usernameChangeHandler={(e) => usernameChangeHandler(e)}
+            passwordChangeHandler={(e) => passwordChangeHandler(e)}
+          /> :
+          blogForm()
       }
     </div>
   )
