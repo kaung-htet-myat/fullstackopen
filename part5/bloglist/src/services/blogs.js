@@ -22,6 +22,10 @@ const create = (blog) => {
     headers: { Authorization: token }
   }
 
+  console.log(baseUrl)
+  console.log(blog)
+  console.log(configs)
+
   const newBlog = axios
     .post(baseUrl, blog, configs)
     .then(response => response.data)

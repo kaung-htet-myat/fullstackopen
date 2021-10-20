@@ -1,43 +1,61 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
+import ToggleVisible from './ToggleVisible'
 import PropTypes from 'prop-types'
 
 const NewBlog = (props) => {
 
-  const [createBlogVisible, setCreateBlogVisible] = useState(false)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
-  const hideWhenVisible = { display: createBlogVisible ? 'none' : '' }
-  const showWhenVisible = { display: createBlogVisible ? '' : 'none' }
+  const titleChangeHandler = (event) => {
+    setTitle(event.target.value)
+  }
+
+  const authorChangeHandler = (event) => {
+    setAuthor(event.target.value)
+  }
+
+  const urlChangeHandler = (event) => {
+    setUrl(event.target.value)
+  }
+
+  const createBlogHandler = (event) => {
+    event.preventDefault()
+    // console.log(event.target)
+    props.createBlog({
+      title,
+      author,
+      url
+    })
+
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
 
   return (
-    <div>
-      <div style={hideWhenVisible}>
-        <button onClick={(e) => setCreateBlogVisible(true)}>Create a blog</button>
-      </div>
-      <form onSubmit={props.createBlogHandler} style={showWhenVisible}>
-        <h3>Create new blog</h3>
-        title: <input type='input' name='title' value={props.title} onChange={props.titleChangeHandler} /><br />
-        author: <input type='input' name='author' value={props.author} onChange={props.authorChangeHandler} /><br />
-        url: <input type='input' name='url' value={props.url} onChange={props.urlChangeHandler} /><br />
-        <button type='submit'>Submit</button>
+    <ToggleVisible buttonLabel="Create a Blog" ref={props.refProp}>
+      <h3>Create new blog</h3>
+      <form className='newblog' onSubmit={(e) => createBlogHandler(e)}>
+        title: <input className='newblog-title' type='input' name='title' value={title} onChange={titleChangeHandler} /><br />
+        author: <input className='newblog-author' type='input' name='author' value={author} onChange={authorChangeHandler} /><br />
+        url: <input className='newblog-url' type='input' name='url' value={url} onChange={urlChangeHandler} /><br />
+        <button id='submit-button' type='submit'>Submit</button>
       </form>
-      <div style={showWhenVisible}>
-        <button onClick={(e) => setCreateBlogVisible(false)}>Cancel</button>
-      </div>
-    </div>
-
+    </ToggleVisible>
   )
 }
 
-NewBlog.propTypes = {
-  createBlogHandler: PropTypes.func.isRequired,
-  showWhenVisible: PropTypes.object.isRequired,
-  title: PropTypes.string.isRequired,
-  author: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired,
-  titleChangeHandler: PropTypes.func.isRequired,
-  authorChangeHandler: PropTypes.func.isRequired,
-  urlChangeHandler: PropTypes.func.isRequired,
-}
+// NewBlog.propTypes = {
+//   createBlogHandler: PropTypes.func.isRequired,
+//   title: PropTypes.string.isRequired,
+//   author: PropTypes.string.isRequired,
+//   url: PropTypes.string.isRequired,
+//   titleChangeHandler: PropTypes.func.isRequired,
+//   authorChangeHandler: PropTypes.func.isRequired,
+//   urlChangeHandler: PropTypes.func.isRequired,
+// }
 
 export default NewBlog

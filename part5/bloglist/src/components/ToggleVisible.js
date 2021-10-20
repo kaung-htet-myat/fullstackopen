@@ -1,11 +1,15 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useImperativeHandle } from 'react'
 
 const toggleBody = (props, ref) => {
-  const [blogVisible, setBlogVisible] = useState(false)
-  const visibleStyle = { display: blogVisible ? '' : 'none' }
+
+  const [createBlogVisible, setCreateBlogVisible] = useState(false)
+
+  const hideWhenVisible = { display: createBlogVisible ? 'none' : '' }
+  const showWhenVisible = { display: createBlogVisible ? '' : 'none' }
 
   const toggleVisible = () => {
-    setBlogVisible(!blogVisible)
+    setCreateBlogVisible(!createBlogVisible)
   }
 
   useImperativeHandle(ref, () => {
@@ -15,9 +19,18 @@ const toggleBody = (props, ref) => {
   })
 
   return (
-    <div style={visibleStyle}>
-      {props.children}
+    <div>
+      <div style={hideWhenVisible}>
+        <button onClick={(e) => toggleVisible()}>{props.buttonLabel}</button>
+      </div>
+      <div style={showWhenVisible}>
+        {props.children}
+        <div>
+          <button onClick={(e) => toggleVisible()}>Cancel</button>
+        </div>
+      </div>
     </div>
+
   )
 }
 

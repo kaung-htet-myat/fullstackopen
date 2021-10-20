@@ -1,19 +1,21 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/logins'
 import NewBlog from './components/NewBlog'
 import LoginForm from './components/LoginForm'
+import ErrorMessage from './components/ErrorMessage'
 
 const App = () => {
+
+  const newBlogRef = useRef()
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const [alertBox, setAlertBox] = useState(null)
 
   useEffect(() => {
     blogService.getAll()
@@ -41,9 +43,10 @@ const App = () => {
         setUser(returnedUser)
         setUsername('')
         setPassword('')
+        setAlertBox(null)
       })
       .catch(error => {
-        alert('Wrong username or password', error)
+        setAlertBox('Wrong username or password')
       })
   }
 
@@ -60,31 +63,11 @@ const App = () => {
     setUser(null)
   }
 
-  const titleChangeHandler = (event) => {
-    setTitle(event.target.value)
-  }
-
-  const authorChangeHandler = (event) => {
-    setAuthor(event.target.value)
-  }
-
-  const urlChangeHandler = (event) => {
-    setUrl(event.target.value)
-  }
-
-  const createBlogHandler = (event) => {
-    event.preventDefault()
-    blogService
-      .create({
-        title,
-        author,
-        url
-      })
+  const createBlog = (blogObject) => {
+    blogService.create(blogObject)
       .then(newBlog => {
         setBlogs(blogs.concat(newBlog))
-        setTitle('')
-        setAuthor('')
-        setUrl('')
+        newBlogRef.current.toggleVisible()
       })
   }
 
@@ -105,15 +88,23 @@ const App = () => {
             setBlogs(blogs.filter(b => b.id !== blog.id))
           }
         })
+        .catch(error => {
+          setAlertBox('You cannot delete this post')
+        })
     }
   }
 
   const blogForm = () => {
 
+    const errorToShow = alertBox ?
+      <ErrorMessage message={alertBox} /> :
+      null
+
     return (
       <div>
-        <h2>User: {user.username} <button onClick={(e) => logoutHandler(e)}>Log out</button></h2>
+        <h2>User: {user.username} <button id='logout-button' onClick={(e) => logoutHandler(e)}>Log out</button></h2>
         <h2>blogs</h2>
+        {errorToShow}
         {blogs.map(blog =>
           <Blog
             key={blog.id}
@@ -124,13 +115,8 @@ const App = () => {
         )}
 
         <NewBlog
-          createBlogHandler={createBlogHandler}
-          title={title}
-          url={url}
-          author={author}
-          titleChangeHandler={(e) => titleChangeHandler(e)}
-          authorChangeHandler={(e) => authorChangeHandler(e)}
-          urlChangeHandler={(e) => urlChangeHandler(e)}
+          createBlog={createBlog}
+          refProp = {newBlogRef}
         />
 
       </div>
@@ -143,6 +129,7 @@ const App = () => {
       {
         user === null ?
           <LoginForm
+            alertBox={alertBox}
             username={username}
             password={password}
             loginHandler={loginHandler}

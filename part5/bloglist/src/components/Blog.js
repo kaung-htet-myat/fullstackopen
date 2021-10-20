@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useRef } from 'react'
-import ToggleVisible from './ToggleVisible'
+import React, { useState } from 'react'
 
 const Blog = ({ blog, likeHandler, removeBlogHandler }) => {
-
-  const blogRef = useRef()
+  const [blogVisible, setBlogVisible] = useState(false)
 
   const blogStyle = {
     paddingTop: 10,
@@ -14,15 +12,26 @@ const Blog = ({ blog, likeHandler, removeBlogHandler }) => {
     marginBottom: 5
   }
 
+  const visibleStyle = {
+    display: blogVisible ? '' : 'none'
+  }
+
+  const toggleVisible = () => {
+    setBlogVisible(!blogVisible)
+  }
+
   return (
-    <div style={blogStyle}>
-      <div>{blog.title} <button onClick={(e) => blogRef.current.toggleVisible()}>view</button></div>
-      <ToggleVisible ref={blogRef}>
-        {blog.author}<br/>
-        {blog.url}<br/>
-        {blog.likes} <button onClick={likeHandler}>like</button>
-        <button onClick={removeBlogHandler}>remove</button>
-      </ToggleVisible>
+    <div className='blog' style={blogStyle}>
+      <div>{blog.title} <button className='view-button' onClick={(e) => toggleVisible()}>view</button></div>
+      <div className="toggleContent" style={visibleStyle}>
+        <div className='author'>{blog.author}</div>
+        <div className='url'>{blog.url}</div>
+        <div className='likes'>{blog.likes} </div>
+        <div>
+          <button className='remove-button' onClick={removeBlogHandler}>remove</button>
+          <button className='like-button' onClick={likeHandler}>like</button>
+        </div>
+      </div>
     </div >
   )
 }

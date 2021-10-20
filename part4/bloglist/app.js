@@ -25,6 +25,11 @@ mongoose.connect(mongoUrl).then(result => {
 app.use('/api/blogs', middlewares.userExtractor, blogRouter)
 app.use('/api/users', userRouter)
 app.use('/api/login', loginRouter)
+if (process.env.NODE_ENV === 'test') {
+    const cypressRouter = require('./controllers/cypress')
+    app.use('/api/testing', cypressRouter)
+  }
+  
 app.use(middlewares.errorHandler)
 
 module.exports = app
