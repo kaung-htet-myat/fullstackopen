@@ -1,3 +1,5 @@
+/* will only use in manual initializations
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -18,8 +20,9 @@ const asObject = (anecdote) => {
 }
 
 const initialState = anecdotesAtStart.map(asObject)
+*/
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = [], action) => {
   console.log('state now: ', state)
   console.log('action', action)
 
@@ -36,8 +39,10 @@ const reducer = (state = initialState, action) => {
       console.log(state);
       return state
     case 'ADD':
-      state = state.concat(asObject(action.data.text))
+      state = state.concat(action.data.text)
       return state
+    case 'INIT':
+      return action.data
     default:
       return state
   }
@@ -58,6 +63,13 @@ export const addAnecdote = (text) => {
     data: {
       text: text
     }
+  })
+}
+
+export const initAnecdotes = (data) => {
+  return ({
+    type: 'INIT',
+    data
   })
 }
 
