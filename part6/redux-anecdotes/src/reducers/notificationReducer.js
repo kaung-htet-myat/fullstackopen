@@ -26,4 +26,18 @@ export const removeNoti = () => {
     })
 }
 
+export const setNoti = (anecdote, type, timer) => {
+    return async dispatch => {
+        dispatch({
+            type,
+            data: {
+                anecdote: anecdote
+            }
+        })
+        setTimeout(() => dispatch({
+            type: "REMOVE"
+        }), timer)
+    }
+}
+
 export default reducer
