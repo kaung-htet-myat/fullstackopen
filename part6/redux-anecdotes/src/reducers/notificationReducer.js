@@ -11,20 +11,7 @@ const reducer = (state=null, action) => {
     }
 }
 
-export const showNoti = (anecdote, type) => {
-    return ({
-        type: type,
-        data: {
-            anecdote: anecdote
-        }
-    })
-}
-
-export const removeNoti = () => {
-    return ({
-        type: "REMOVE"
-    })
-}
+let removeNoti
 
 export const setNoti = (anecdote, type, timer) => {
     return async dispatch => {
@@ -34,7 +21,8 @@ export const setNoti = (anecdote, type, timer) => {
                 anecdote: anecdote
             }
         })
-        setTimeout(() => dispatch({
+        clearTimeout(removeNoti)
+        removeNoti = setTimeout(() => dispatch({
             type: "REMOVE"
         }), timer)
     }
