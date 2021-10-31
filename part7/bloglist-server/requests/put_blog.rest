@@ -1,0 +1,9 @@
+PUT http://localhost:3003/api/blogs/6160701c3b2839af0eb6013f
+content-Type: application/json
+
+{
+    "title": "No Likes Test",
+    "author": "Kaung Htet",
+    "url": "http://aitoday.blog",
+    "likes": 0
+}
