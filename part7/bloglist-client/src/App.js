@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
+import { useDispatch } from 'react-redux'
+
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/logins'
@@ -9,28 +11,27 @@ import LoginForm from './components/LoginForm'
 import ErrorMessage from './components/ErrorMessage'
 
 import { setNoti } from './reducers/notificationReducer'
+import { initBlogs, createBlog, updateBlog, removeBlog } from './reducers/blogReducer'
+import { setUser, removeUser } from './reducers/userReducer'
 
 const App = (props) => {
+
+  const dispatch = useDispatch()
 
   const newBlogRef = useRef()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll()
-      .then(blogs => {
-        setBlogs(blogService.sortBlogs(blogs))
-      })
-  }, [])
+    dispatch(initBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser')
     if (loggedInUser) {
       const currentUser = JSON.parse(loggedInUser)
-      setUser(currentUser)
+      props.setUser(currentUser)
       blogService.setToken(currentUser.token)
     }
   }, [])
@@ -42,7 +43,7 @@ const App = (props) => {
       .then(returnedUser => {
         localStorage.setItem('loggedInUser', JSON.stringify(returnedUser))
         blogService.setToken(returnedUser.token)
-        setUser(returnedUser)
+        props.setUser(returnedUser)
         setUsername('')
         setPassword('')
         props.setNoti('CLEAR', 0)
@@ -62,37 +63,26 @@ const App = (props) => {
 
   const logoutHandler = (event) => {
     localStorage.removeItem('loggedInUser')
-    setUser(null)
+    props.removeUser()
   }
 
   const createBlog = (blogObject) => {
-    blogService.create(blogObject)
-      .then(newBlog => {
-        setBlogs(blogs.concat(newBlog))
-        newBlogRef.current.toggleVisible()
-      })
+    props.createBlog(blogObject)
+    newBlogRef.current.toggleVisible()
   }
 
   const likeHandler = (event, blog) => {
-    blogService
-      .likeBlog(blog)
-      .then(updatedBlog => {
-        setBlogs(blogs.map(b => b.id !== updatedBlog.id ? b : updatedBlog))
-      })
+    props.updateBlog(blog)
   }
 
   const removeBlogHandler = (event, blog) => {
     if (window.confirm(`Remove ${blog.title} from phonebook?`)) {
-      blogService
-        .removeBlog(blog)
-        .then(status => {
-          if (status === 204) {
-            setBlogs(blogs.filter(b => b.id !== blog.id))
-          }
-        })
-        .catch(error => {
-          props.setNoti('INVALID-DELETE', 5000)
-        })
+      try {
+        props.removeBlog(blog)
+      }
+      catch (error) {
+        props.setNoti('INVALID-DELETE', 5000)
+      }
     }
   }
 
@@ -104,10 +94,10 @@ const App = (props) => {
 
     return (
       <div>
-        <h2>User: {user.username} <button id='logout-button' onClick={(e) => logoutHandler(e)}>Log out</button></h2>
+        <h2>User: {props.user.username} <button id='logout-button' onClick={(e) => logoutHandler(e)}>Log out</button></h2>
         <h2>blogs</h2>
         {errorToShow}
-        {blogs.map(blog =>
+        {props.blogs.map(blog =>
           <Blog
             key={blog.id}
             blog={blog}
@@ -118,7 +108,7 @@ const App = (props) => {
 
         <NewBlog
           createBlog={createBlog}
-          refProp = {newBlogRef}
+          refProp={newBlogRef}
         />
 
       </div>
@@ -129,7 +119,7 @@ const App = (props) => {
     <div>
       <h1>Blog Lists</h1>
       {
-        user === null ?
+        props.user === null ?
           <LoginForm
             alertBox={props.noti}
             username={username}
@@ -147,13 +137,20 @@ const App = (props) => {
 const mapStateToProps = (state) => {
   return (
     {
+      user: state.user,
+      blogs: state.blogs.sort((a,b) => b.likes > a.likes ? 1 : -1),
       noti: state.noti
     }
   )
 }
 
 const mapDispatchToProps = {
-  setNoti
+  setNoti,
+  createBlog,
+  updateBlog,
+  removeBlog,
+  setUser,
+  removeUser
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
