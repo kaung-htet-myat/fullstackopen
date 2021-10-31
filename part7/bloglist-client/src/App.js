@@ -16,7 +16,7 @@ import IndiUserView from './components/IndiUserView'
 import IndiBlogView from './components/IndiBlogView'
 
 import { setNoti } from './reducers/notificationReducer'
-import { initBlogs, createBlog, updateBlog, removeBlog } from './reducers/blogReducer'
+import { initBlogs, createBlog, updateBlog, commentBlog, removeBlog } from './reducers/blogReducer'
 import { setUser, removeUser } from './reducers/userReducer'
 import { initUsers } from './reducers/userListReducer'
 
@@ -26,6 +26,7 @@ const App = (props) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [comment, setComment] = useState('')
 
   useEffect(() => {
     props.initBlogs()
@@ -66,6 +67,14 @@ const App = (props) => {
     setPassword(event.target.value)
   }
 
+  const onCommentChangeHandler = (e) => {
+    setComment(e.target.value)
+  }
+
+  const onCommentSubmitHandler = (e, blog) => {
+    props.commentBlog(blog, comment)
+  }
+
   const logoutHandler = (event) => {
     localStorage.removeItem('loggedInUser')
     props.removeUser()
@@ -97,15 +106,17 @@ const App = (props) => {
       <ErrorMessage message={props.noti} /> :
       null
 
-    const blogMatch = useRouteMatch('/:id')
-    const indiBlog = blogMatch
-      ? props.blogs.find(blog => Number(blog.id) === Number(blogMatch.params.id))
-      : null
-
     const userMatch = useRouteMatch('/users/:id')
     const indiUser = userMatch
-      ? props.users.find(user => Number(user.id) === Number(userMatch.params.id))
+      ? props.users.find(user => user._id === userMatch.params.id)
       : null
+
+    const blogMatch = useRouteMatch('/:id')
+    const indiBlog = blogMatch
+      ? props.blogs.find(blog => blog.id === blogMatch.params.id)
+      : null
+
+    console.log(indiBlog)
 
     return (
       <div>
@@ -113,13 +124,19 @@ const App = (props) => {
         <h2>User: {props.user.username} <button id='logout-button' onClick={(e) => logoutHandler(e)}>Log out</button></h2>
         <Switch>
           <Route path='/users/:id'>
-            <IndiUserView user={indiUser}/>
+            <IndiUserView user={indiUser} />
           </Route>
           <Route path='/users'>
-            <UserListView users={props.users}/>
+            <UserListView users={props.users} />
           </Route>
           <Route path='/:id'>
-            <IndiBlogView blog={indiBlog} />
+            <IndiBlogView
+              blog={indiBlog}
+              likeHandler={(e) => likeHandler(e, indiBlog)}
+              comment = {comment}
+              onCommentChangeHandler = {(e) => onCommentChangeHandler(e)}
+              onCommentSubmitHandler = {(e) => onCommentSubmitHandler(e, indiBlog)}
+            />
           </Route>
           <Route path='/'>
             <div>
@@ -192,7 +209,8 @@ const mapDispatchToProps = {
   removeBlog,
   setUser,
   removeUser,
-  initUsers
+  initUsers,
+  commentBlog
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

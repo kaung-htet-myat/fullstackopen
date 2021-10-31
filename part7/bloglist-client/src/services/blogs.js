@@ -47,6 +47,22 @@ const likeBlog = (blog) => {
   return updatedBlog
 }
 
+const comment = (blog, comment) => {
+
+  const newBlog = {
+    ...blog,
+    comments: blog.comments.concat(comment)
+  }
+
+  console.log('newBlog in service: ', newBlog)
+
+  const updatedBlog = axios
+    .put(`${baseUrl}/${blog.id}`, newBlog)
+    .then(response => response.data)
+
+  return updatedBlog
+}
+
 const removeBlog = (blog) => {
 
   const configs = {
@@ -60,4 +76,4 @@ const removeBlog = (blog) => {
   return status
 }
 
-export default { getAll, setToken, create, likeBlog, sortBlogs, removeBlog }
+export default { getAll, setToken, create, likeBlog, sortBlogs, removeBlog, comment }

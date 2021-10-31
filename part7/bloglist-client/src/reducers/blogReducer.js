@@ -10,6 +10,9 @@ const reducer = (state = [], action) => {
   case 'UPDATE-BLOGS':
     state = state.map(s => s.id !== action.data.blog.id ? s : action.data.blog)
     return state
+  case 'COMMENT-BLOGS':
+    state = state.map(s => s.id !== action.data.blog.id ? s : action.data.blog)
+    return state
   case 'REMOVE-BLOGS':
     state = state.filter(s => s.id !== action.data.blog.id)
     return state
@@ -47,6 +50,21 @@ export const updateBlog = (blog) => {
     const updatedBlog = await blogServices.likeBlog(blog)
     dispatch({
       type: 'UPDATE-BLOGS',
+      data: {
+        blog: updatedBlog
+      }
+    })
+  }
+}
+
+export const commentBlog = (blog, comment) => {
+  return async dispatch => {
+    console.log('blog in comment: ', blog)
+    console.log('comment: ', comment)
+    const updatedBlog = await blogServices.comment(blog, comment)
+    console.log('updatedBlog: ',updatedBlog)
+    dispatch({
+      type: 'COMMENT-BLOGS',
       data: {
         blog: updatedBlog
       }

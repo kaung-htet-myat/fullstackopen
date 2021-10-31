@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ blog, likeHandler, removeBlogHandler }) => {
   const [blogVisible, setBlogVisible] = useState(false)
@@ -22,7 +23,7 @@ const Blog = ({ blog, likeHandler, removeBlogHandler }) => {
 
   return (
     <div className='blog' style={blogStyle}>
-      <div>{blog.title} <button className='view-button' onClick={(e) => toggleVisible()}>view</button></div>
+      <div><Link to={`/${blog.id}`}>{blog.title}</Link> <button className='view-button' onClick={(e) => toggleVisible()}>view</button></div>
       <div className="toggleContent" style={visibleStyle}>
         <div className='author'>{blog.author}</div>
         <div className='url'>{blog.url}</div>
