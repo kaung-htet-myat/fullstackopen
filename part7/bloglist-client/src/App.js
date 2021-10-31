@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react'
+import { connect } from 'react-redux'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/logins'
@@ -7,7 +8,9 @@ import NewBlog from './components/NewBlog'
 import LoginForm from './components/LoginForm'
 import ErrorMessage from './components/ErrorMessage'
 
-const App = () => {
+import { setNoti } from './reducers/notificationReducer'
+
+const App = (props) => {
 
   const newBlogRef = useRef()
 
@@ -15,7 +18,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [alertBox, setAlertBox] = useState(null)
 
   useEffect(() => {
     blogService.getAll()
@@ -43,10 +45,10 @@ const App = () => {
         setUser(returnedUser)
         setUsername('')
         setPassword('')
-        setAlertBox(null)
+        props.setNoti('CLEAR', 0)
       })
       .catch(error => {
-        setAlertBox('Wrong username or password')
+        props.setNoti('FAILED-LOGIN', 5000)
       })
   }
 
@@ -89,15 +91,15 @@ const App = () => {
           }
         })
         .catch(error => {
-          setAlertBox('You cannot delete this post')
+          props.setNoti('INVALID-DELETE', 5000)
         })
     }
   }
 
   const blogForm = () => {
 
-    const errorToShow = alertBox ?
-      <ErrorMessage message={alertBox} /> :
+    const errorToShow = props.noti ?
+      <ErrorMessage message={props.noti} /> :
       null
 
     return (
@@ -129,7 +131,7 @@ const App = () => {
       {
         user === null ?
           <LoginForm
-            alertBox={alertBox}
+            alertBox={props.noti}
             username={username}
             password={password}
             loginHandler={loginHandler}
@@ -142,4 +144,16 @@ const App = () => {
   )
 }
 
-export default App
+const mapStateToProps = (state) => {
+  return (
+    {
+      noti: state.noti
+    }
+  )
+}
+
+const mapDispatchToProps = {
+  setNoti
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
