@@ -1,6 +1,8 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import { render, fireEvent } from '@testing-library/react'
+import { BrowserRouter as Router } from 'react-router-dom'
+
 import Blog from './Blog'
 import NewBlog from './NewBlog'
 
@@ -19,7 +21,9 @@ describe('Blog Tests', () => {
     likeHandler = jest.fn()
 
     blogComponent = render(
-      <Blog blog={blog} likeHandler={likeHandler}/>
+      <Router>
+        <Blog blog={blog} likeHandler={likeHandler} />
+      </Router>
     )
   })
 
@@ -57,7 +61,9 @@ describe('form tests', () => {
     createBlog = jest.fn()
 
     newBlogComponent = render(
-      <NewBlog createBlog={createBlog}/>
+      <Router>
+        <NewBlog createBlog={createBlog} />
+      </Router>
     )
   })
 
@@ -91,9 +97,9 @@ describe('form tests', () => {
     expect(createBlog.mock.calls).toHaveLength(1)
     expect(createBlog).toHaveBeenCalled()
     console.log(createBlog.mock.calls[0][0])
-    expect(createBlog.mock.calls[0][0].title).toBe('testing of author id form' )
-    expect(createBlog.mock.calls[0][0].author).toBe('Christopher' )
-    expect(createBlog.mock.calls[0][0].url).toBe('testing.blog' )
+    expect(createBlog.mock.calls[0][0].title).toBe('testing of author id form')
+    expect(createBlog.mock.calls[0][0].author).toBe('Christopher')
+    expect(createBlog.mock.calls[0][0].url).toBe('testing.blog')
   })
 })
 

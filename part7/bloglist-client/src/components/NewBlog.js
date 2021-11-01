@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useRef } from 'react'
+import { Form, Button } from 'react-bootstrap'
+
 import ToggleVisible from './ToggleVisible'
-import PropTypes from 'prop-types'
+import styles from './NewBlog.module.css'
 
 const NewBlog = (props) => {
 
@@ -38,12 +40,23 @@ const NewBlog = (props) => {
   return (
     <ToggleVisible buttonLabel="Create a Blog" ref={props.refProp}>
       <h3>Create new blog</h3>
-      <form className='newblog' onSubmit={(e) => createBlogHandler(e)}>
-        title: <input className='newblog-title' type='input' name='title' value={title} onChange={titleChangeHandler} /><br />
-        author: <input className='newblog-author' type='input' name='author' value={author} onChange={authorChangeHandler} /><br />
-        url: <input className='newblog-url' type='input' name='url' value={url} onChange={urlChangeHandler} /><br />
-        <button id='submit-button' type='submit'>Submit</button>
-      </form>
+      <Form className='newblog' onSubmit={(e) => createBlogHandler(e)}>
+        <Form.Group>
+          <Form.Label>
+            title:
+          </Form.Label>
+          <Form.Control className='newblog-title' type='input' name='title' value={title} onChange={titleChangeHandler} />
+          <Form.Label>
+            author:
+          </Form.Label>
+          <Form.Control className='newblog-author' type='input' name='author' value={author} onChange={authorChangeHandler} />
+          <Form.Label>
+            url:
+          </Form.Label>
+          <Form.Control className='newblog-url' type='input' name='url' value={url} onChange={urlChangeHandler} />
+          <Button className={styles.submitbutton} variant="primary" id='submit-button' type='submit'>Submit</Button>
+        </Form.Group>
+      </Form>
     </ToggleVisible>
   )
 }

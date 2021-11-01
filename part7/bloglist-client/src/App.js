@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
-import { useDispatch } from 'react-redux'
-import { Link, Switch, Route, useRouteMatch, useHistory } from 'react-router-dom'
+import { Switch, Route, useRouteMatch } from 'react-router-dom'
+import { Table, Button } from 'react-bootstrap'
 
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -19,6 +19,8 @@ import { setNoti } from './reducers/notificationReducer'
 import { initBlogs, createBlog, updateBlog, commentBlog, removeBlog } from './reducers/blogReducer'
 import { setUser, removeUser } from './reducers/userReducer'
 import { initUsers } from './reducers/userListReducer'
+
+import styles from './App.module.css'
 
 const App = (props) => {
 
@@ -121,7 +123,7 @@ const App = (props) => {
     return (
       <div>
         <Menu />
-        <h2>User: {props.user.username} <button id='logout-button' onClick={(e) => logoutHandler(e)}>Log out</button></h2>
+        <p className={styles.username}>User: {props.user.username} <Button variant='primary' id='logout-button' onClick={(e) => logoutHandler(e)}>Log out</Button></p>
         <Switch>
           <Route path='/users/:id'>
             <IndiUserView user={indiUser} />
@@ -133,23 +135,30 @@ const App = (props) => {
             <IndiBlogView
               blog={indiBlog}
               likeHandler={(e) => likeHandler(e, indiBlog)}
-              comment = {comment}
-              onCommentChangeHandler = {(e) => onCommentChangeHandler(e)}
-              onCommentSubmitHandler = {(e) => onCommentSubmitHandler(e, indiBlog)}
+              comment={comment}
+              onCommentChangeHandler={(e) => onCommentChangeHandler(e)}
+              onCommentSubmitHandler={(e) => onCommentSubmitHandler(e, indiBlog)}
             />
           </Route>
           <Route path='/'>
             <div>
               <h2>blogs</h2>
               {errorToShow}
-              {props.blogs.map(blog =>
-                <Blog
-                  key={blog.id}
-                  blog={blog}
-                  likeHandler={(e) => likeHandler(e, blog)}
-                  removeBlogHandler={(e) => removeBlogHandler(e, blog)}
-                />
-              )}
+              <Table striped>
+                {props.blogs.map(blog =>
+                  <tr key={blog.id}>
+                    <td>
+                      <Blog
+                        // key={blog.id}
+                        blog={blog}
+                        likeHandler={(e) => likeHandler(e, blog)}
+                        removeBlogHandler={(e) => removeBlogHandler(e, blog)}
+                      />
+                    </td>
+                  </tr>
+
+                )}
+              </Table>
 
               <NewBlog
                 createBlog={createBlog}
@@ -163,8 +172,7 @@ const App = (props) => {
   }
 
   return (
-    <div>
-      <h1>Blog Lists</h1>
+    <div className='container'>
       {
         props.user === null ?
           <LoginForm

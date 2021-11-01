@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useImperativeHandle } from 'react'
+import { Button } from 'react-bootstrap'
+
+import styles from './ToggleVisible.module.css'
 
 const toggleBody = (props, ref) => {
 
@@ -19,14 +22,14 @@ const toggleBody = (props, ref) => {
   })
 
   return (
-    <div>
+    <div className={styles.wholediv}>
       <div style={hideWhenVisible}>
-        <button onClick={(e) => toggleVisible()}>{props.buttonLabel}</button>
+        <Button variant='secondary' onClick={(e) => toggleVisible()}>{props.buttonLabel}</Button>
       </div>
       <div style={showWhenVisible}>
         {props.children}
         <div>
-          <button onClick={(e) => toggleVisible()}>Cancel</button>
+          <Button className={styles.cancelbutton} variant='secondary' onClick={(e) => toggleVisible()}>Cancel</Button>
         </div>
       </div>
     </div>
