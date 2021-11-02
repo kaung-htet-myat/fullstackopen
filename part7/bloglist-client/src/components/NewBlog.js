@@ -1,9 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useRef } from 'react'
 import { Form, Button } from 'react-bootstrap'
+import styled from 'styled-components'
 
 import ToggleVisible from './ToggleVisible'
-import styles from './NewBlog.module.css'
+
+const SubmitBtn = styled.div`
+  margin: 10px 0px;
+`
 
 const NewBlog = (props) => {
 
@@ -54,7 +58,9 @@ const NewBlog = (props) => {
             url:
           </Form.Label>
           <Form.Control className='newblog-url' type='input' name='url' value={url} onChange={urlChangeHandler} />
-          <Button className={styles.submitbutton} variant="primary" id='submit-button' type='submit'>Submit</Button>
+          <SubmitBtn>
+            <Button className='submitBtn' variant="primary" type='submit'>Submit</Button>
+          </SubmitBtn>
         </Form.Group>
       </Form>
     </ToggleVisible>

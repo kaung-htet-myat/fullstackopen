@@ -1,17 +1,22 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Nav, Navbar } from 'react-bootstrap'
+import styled from 'styled-components'
 
-import styles from './Menu.css'
+const Brand = styled.h1`
+  color:darkgray
+`
 
 const Menu = () => {
+
   const padding = {
     paddingRight: 5
   }
+
   return (
     <div>
       <Navbar collapseOnSelect expand="lg" bg="light">
-        <Navbar.Brand href="#home"><h1 className={styles.brand}>BlogList</h1></Navbar.Brand>
+        <Link to='/'><Navbar.Brand><Brand className='brand'>BlogList</Brand></Navbar.Brand></Link>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">

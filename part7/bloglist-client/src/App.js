@@ -20,8 +20,22 @@ import { setNoti } from './reducers/notificationReducer'
 import { initBlogs, createBlog, updateBlog, commentBlog, removeBlog } from './reducers/blogReducer'
 import { setUser, removeUser } from './reducers/userReducer'
 import { initUsers } from './reducers/userListReducer'
+import styled from 'styled-components'
 
-import styles from './App.module.css'
+const StyledUsername = styled.p`
+  float:right;
+  color:darkgray;
+  font-size:24px;
+  margin-top:20px;
+  margin-left:12px;
+`
+
+const StyledBlogTitle = styled.p`
+  color:darkgray;
+  font-size:30px;
+  margin-top:30px;
+  margin-left:12px;
+`
 
 const App = (props) => {
 
@@ -124,7 +138,7 @@ const App = (props) => {
     return (
       <div>
         <Menu />
-        <p className={styles.username}>User: {props.user.username} <Button variant='primary' id='logout-button' onClick={(e) => logoutHandler(e)}>Log out</Button></p>
+        <StyledUsername>Logged in as {props.user.username} <Button variant='primary' id='logout-button' onClick={(e) => logoutHandler(e)}>Log out</Button></StyledUsername>
         <Switch>
           <Route path='/users/:id'>
             <IndiUserView user={indiUser} />
@@ -143,7 +157,7 @@ const App = (props) => {
           </Route>
           <Route path='/'>
             <div>
-              <h2>blogs</h2>
+              <StyledBlogTitle>Blogs</StyledBlogTitle>
               {errorToShow}
               <Blogs
                 blogs={props.blogs}
