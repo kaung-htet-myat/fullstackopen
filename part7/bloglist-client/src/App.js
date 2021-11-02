@@ -14,6 +14,7 @@ import Menu from './components/Menu'
 import UserListView from './components/UserListView'
 import IndiUserView from './components/IndiUserView'
 import IndiBlogView from './components/IndiBlogView'
+import Blogs from './components/Blogs'
 
 import { setNoti } from './reducers/notificationReducer'
 import { initBlogs, createBlog, updateBlog, commentBlog, removeBlog } from './reducers/blogReducer'
@@ -144,22 +145,11 @@ const App = (props) => {
             <div>
               <h2>blogs</h2>
               {errorToShow}
-              <Table striped>
-                {props.blogs.map(blog =>
-                  <tr key={blog.id}>
-                    <td>
-                      <Blog
-                        // key={blog.id}
-                        blog={blog}
-                        likeHandler={(e) => likeHandler(e, blog)}
-                        removeBlogHandler={(e) => removeBlogHandler(e, blog)}
-                      />
-                    </td>
-                  </tr>
-
-                )}
-              </Table>
-
+              <Blogs
+                blogs={props.blogs}
+                likeHandler={likeHandler}
+                removeBlogHandler={removeBlogHandler}
+              />
               <NewBlog
                 createBlog={createBlog}
                 refProp={newBlogRef}
